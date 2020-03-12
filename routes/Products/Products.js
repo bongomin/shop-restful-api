@@ -6,12 +6,25 @@ const Product = mongoose.model('Product')
 
 // Route for Fetching  Products 
 router.get('/', (req, res, next) => {
-   Product.find().
-      then(all_data => {
+   Product.find()
+      .select('name price id')
+      .then(all_data => {
          if (all_data.length >= 0) {
             res.status(200).json({
-               message: "These are all the products in the database",
-               data: all_data
+               count: all_data.length,
+               data: all_data.map(doc => {
+                  return {
+                     _id: doc.id,
+                     name: doc.name,
+                     price: doc.price,
+                     request: {
+                        type: "GET",
+                        url: "localhost:3000/api/products" + doc.id
+
+                     }
+
+                  }
+               })
             })
          }
          else {
@@ -36,15 +49,21 @@ router.post('/', (req, res, next) => {
       price: req.body.price
    })
    product.save()
-      .exec()
       .then(result => {
          res.status(200).json({
             message: "these are saved products",
-            saved_product: result
+            saved_product: {
+               id: result.id,
+               name: result.name,
+               price: result.price,
+               request: {
+                  type: "POST",
+                  url: "localhost:3000/products/" + result.id
+               }
+            }
          })
       })
       .catch(err => {
-         console.log(err)
          res.json({
             err: err
          })
@@ -60,7 +79,15 @@ router.get('/:id', (req, res, next) => {
          if (data) {
             res.status(200).json({
                message: `data passed and recieved by ${req.params.id} is :`,
-               result: data
+               result: {
+                  id: data.id,
+                  name: data.name,
+                  price: data.price,
+                  request: {
+                     type: "GET",
+                     url: "localhost:3000/api/products/" + data.id
+                  }
+               }
             });
          }
          else {
@@ -88,7 +115,15 @@ router.delete('/:id', (req, res, next) => {
       .then(deleted => {
          res.json({
             message: "deleted item",
-            deleted: deleted
+            deleted: {
+               id: deleted.id,
+               name: deleted.name,
+               price: deleted.price,
+               request: {
+                  type: "DELETE",
+                  url: "localhost:3000/products/" + deleted.id
+               }
+            }
          })
       })
       .catch(err => {
@@ -110,7 +145,13 @@ router.patch('/:id', (req, res, next) => {
       .then(result => {
          res.status(200).json({
             message: "Upating data ",
-            result: result
+            result: {
+               name: result.name,
+               price: result.price,
+               request: {
+                  type: "PATCH / UPDATE",
+               }
+            }
          })
       })
       .catch(err => {
