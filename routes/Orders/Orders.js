@@ -7,6 +7,7 @@ const product = require('../../models/Products')
 // Routes that fetches all the orders 
 router.get('/', (req, res, next) => {
    Order.find()
+      .populate('product', 'name')
       .then(doc => res.status(200).json({
          message: "Get all Orders",
          Order: doc.map(data => {
@@ -67,6 +68,7 @@ router.post('/', (req, res, next) => {
 // Route thatfetches a single order 
 router.get('/:id', (req, res, next) => {
    Order.findById(req.params.id)
+      .populate('product')
       .exec()
       .then(order => {
          if (!order) {
@@ -78,7 +80,7 @@ router.get('/:id', (req, res, next) => {
             order: order,
             request: {
                Type: "GET",
-               url: "localhost:3000/api/orders/id"
+               url: "localhost:3000/api/orders/" + order.id
             }
          })
       })
