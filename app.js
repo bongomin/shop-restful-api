@@ -1,16 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var ProductsRoute = require('./routes/Products/Products');
-var OrdersRouter = require('./routes/Orders/Orders');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose')
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const ProductsRoute = require('./routes/Products/Products');
+const OrdersRouter = require('./routes/Orders/Orders');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/Users/Users');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose')
 
-var app = express();
+const app = express();
 
 /*** view engine setup *** */
 app.set('views', path.join(__dirname, 'views'));
@@ -40,9 +40,10 @@ app.use((req, res, next) => {
   next();
 });
 
+
 /********** Routes that handle all requests   ************ */
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api', usersRouter);
 app.use('/api/products', ProductsRoute);
 app.use('/api/orders', OrdersRouter);
 
