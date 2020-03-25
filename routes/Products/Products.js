@@ -5,43 +5,15 @@ require('../../models/Products')
 const Product = mongoose.model('Product');
 const checkAuthenticated = require('../../Auth/check-auth')
 
+const { Fetch_all_products,
+   Post_a_product,
+   fetch_a_product
+   , delete_Product,
+   update_product
+} = require('../../controllers/Products')
+
 // Route for Fetching  Products 
-router.get('/', (req, res, next) => {
-   Product.find()
-      .select('name price id')
-      .then(all_data => {
-         if (all_data.length >= 0) {
-            res.status(200).json({
-               count: all_data.length,
-               data: all_data.map(doc => {
-                  return {
-                     _id: doc.id,
-                     name: doc.name,
-                     price: doc.price,
-                     request: {
-                        type: "GET",
-                        url: "localhost:3000/api/products" + doc.id
-
-                     }
-
-                  }
-               })
-            })
-         }
-         else {
-            res.status(404).json({
-               error: "No Products Found in the database"
-            })
-         }
-
-      })
-      .catch(err => {
-         res.status(500).json({
-            err: err
-         })
-      })
-});
-
+router.get('/', Fetch_all_products);
 // Route That  handles post requests to products
 router.post('/', checkAuthenticated, (req, res, next) => {
    const product = new Product({
@@ -70,113 +42,12 @@ router.post('/', checkAuthenticated, (req, res, next) => {
          })
       })
 });
-
+router.post('/', Post_a_product);
 //Route for Fetching  a single Product  product
-router.get('/:id', (req, res, next) => {
-   const id = req.params.id;
-   Product.findById(id)
-      .exec()
-      .then(data => {
-         if (data) {
-            res.status(200).json({
-               message: `data passed and recieved by ${req.params.id} is :`,
-               result: {
-                  id: data.id,
-                  name: data.name,
-                  price: data.price,
-                  request: {
-                     type: "GET",
-                     url: "localhost:3000/api/products/" + data.id
-                  }
-               }
-            });
-         }
-         else {
-            res.status(500).json({
-               message: `No Id of that sort is found Into the system`
-            });
-         }
-
-      })
-      .catch(err => {
-         console.log(err)
-         res.status(500).json({
-            error: err
-         })
-      })
-})
-
+router.get('/:id', fetch_a_product)
 // Route that Handles deleting a product 
-router.delete('/:id', (req, res, next) => {
-   const product = req.params.id;
-   Product.remove({
-      _id: product
-   })
-      .exec()
-      .then(deleted => {
-         res.json({
-            message: "deleted item",
-            deleted: {
-               id: deleted.id,
-               name: deleted.name,
-               price: deleted.price,
-               request: {
-                  type: "DELETE",
-                  url: "localhost:3000/products/" + deleted.id
-               }
-            }
-         })
-      })
-      .catch(err => {
-         res.json({ err })
-      })
-
-})
-
-
+router.delete('/:id', delete_Product)
 // Route for put /patch request for updating
-router.patch('/:id', (req, res, next) => {
-   const id = req.params.id;
-   const UpdateOps = {}
-   for (const Ops of req.body) {
-      UpdateOps[Ops.propName] = Ops.value;
-   }
-   Product.update({ _id: id }, { $set: UpdateOps })
-      .exec()
-      .then(result => {
-         res.status(200).json({
-            message: "Upating data ",
-            result: {
-               name: result.name,
-               price: result.price,
-               request: {
-                  type: "PATCH / UPDATE",
-               }
-            }
-         })
-      })
-      .catch(err => {
-         console.log(err)
-         res.status(500).json({
-            error: err
-         })
-      })
-
-})
-
-// ie sample request to postman
-/**[
-{
-   "propName": "price","value":"170000"
-   }
-   
-   ]* */
-
-
-
-
-
-
-
+router.patch('/:id', update_product)
 
 module.exports = router;
