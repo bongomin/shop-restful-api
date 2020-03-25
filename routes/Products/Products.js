@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 require('../../models/Products')
-const Product = mongoose.model('Product')
+const Product = mongoose.model('Product');
+const checkAuthenticated = require('../../Auth/check-auth')
 
 // Route for Fetching  Products 
 router.get('/', (req, res, next) => {
@@ -42,7 +43,7 @@ router.get('/', (req, res, next) => {
 });
 
 // Route That  handles post requests to products
-router.post('/', (req, res, next) => {
+router.post('/', checkAuthenticated, (req, res, next) => {
    const product = new Product({
       _id: mongoose.Types.ObjectId(),
       name: req.body.name,
