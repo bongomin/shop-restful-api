@@ -13,7 +13,7 @@ const { Fetch_all_products,
 } = require('../../controllers/Products')
 
 // Route for Fetching  Products 
-router.get('/', Fetch_all_products);
+router.get('/', checkAuthenticated, Fetch_all_products);
 // Route That  handles post requests to products
 router.post('/', checkAuthenticated, (req, res, next) => {
    const product = new Product({

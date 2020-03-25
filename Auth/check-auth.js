@@ -1,4 +1,4 @@
-const jwt = require(jsonwebtoken);
+const jwt = require('jsonwebtoken');
 
 
 // middleware that checks if the user is authorized to access an endpoint
